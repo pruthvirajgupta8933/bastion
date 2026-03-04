@@ -1,0 +1,31 @@
+{
+  "name": "shipkit",
+  "version": "2.0.0",
+  "description": "Thin addon layer for Claude Code — secret detection, migration safety, architecture analysis, auto-format for non-JS languages",
+  "main": "bin/shipkit.cjs",
+  "bin": {
+    "shipkit": "bin/shipkit.cjs"
+  },
+  "files": [
+    "bin/",
+    "commands/",
+    "hooks/"
+  ],
+  "scripts": {
+    "install-local": "node bin/shipkit.cjs install",
+    "uninstall-local": "node bin/shipkit.cjs uninstall",
+    "test": "node bin/shipkit.cjs detect"
+  },
+  "keywords": [
+    "claude-code",
+    "addon",
+    "code-quality",
+    "shipkit",
+    "secret-detection",
+    "migration-safety"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
