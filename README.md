@@ -1,15 +1,15 @@
-# ShipKit
+# Bastion
 
-**One command to set up your entire Claude Code dev stack.**
+**One command to fortify your Claude Code dev stack.**
 
-ShipKit is a thin safety addon for [Claude Code](https://claude.ai/claude-code). Running `shipkit install` installs and configures the full development stack:
+Bastion is a safety-first addon for [Claude Code](https://claude.ai/claude-code). Running `bastion install` sets up the full development stack:
 
 | Layer | Tool | What it does |
 |-------|------|-------------|
 | Standards | [ECC](https://github.com/affaan-m/everything-claude-code) (ecc-universal) | Coding rules, agents, and commands for Claude Code |
 | Workflow | [GSD](https://www.npmjs.com/package/get-shit-done-cc) (get-shit-done-cc) | Phase-based project management, planning, and execution |
 | Automation | [Ralph Loop](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum) | Autonomous iteration loops (`/ralph-loop`) |
-| Safety | **ShipKit** | Secret detection, SQL injection scanning, migration safety, auto-formatting |
+| Safety | **Bastion** | Secret detection, SQL injection scanning, migration safety, auto-formatting |
 
 ## Quick Start
 
@@ -22,8 +22,8 @@ ShipKit is a thin safety addon for [Claude Code](https://claude.ai/claude-code).
 ### Install
 
 ```bash
-git clone https://github.com/pruthvirajgupta8933/shipkit.git ~/shipkit
-node ~/shipkit/bin/shipkit.cjs install
+git clone https://github.com/pruthvirajgupta8933/bastion.git ~/bastion
+node ~/bastion/bin/bastion.cjs install
 ```
 
 That's it. One command installs all four layers.
@@ -40,23 +40,23 @@ cat ~/.claude/get-shit-done/VERSION
 # Ralph Loop installed
 ls ~/.claude/commands/ralph-loop.md
 
-# ShipKit hooks active
-grep ship- ~/.claude/settings.json
+# Bastion hooks active
+grep bastion- ~/.claude/settings.json
 ```
 
 ### Uninstall
 
 ```bash
-node ~/shipkit/bin/shipkit.cjs uninstall
+node ~/bastion/bin/bastion.cjs uninstall
 ```
 
-> **Note:** Uninstall only removes ShipKit's own files (3 hooks + 1 command). ECC, GSD, and Ralph Loop are left untouched.
+> **Note:** Uninstall only removes Bastion's own files (3 hooks + 1 command). ECC, GSD, and Ralph Loop are left untouched.
 
-## What ShipKit Adds
+## What Bastion Adds
 
-ShipKit installs 3 PostToolUse hooks and 1 slash command. These run automatically every time Claude Code writes or edits a file.
+Bastion installs 3 PostToolUse hooks and 1 slash command. These run automatically every time Claude Code writes or edits a file.
 
-### Hook 1: Guardian (`ship-guardian.js`)
+### Hook 1: Guardian (`bastion-guardian.js`)
 
 Scans every file write/edit for security issues:
 
@@ -66,7 +66,7 @@ Scans every file write/edit for security issues:
 
 Skips comments, `process.env` references, and `.env` file patterns to avoid false positives.
 
-### Hook 2: Auto-Format (`ship-format.sh`)
+### Hook 2: Auto-Format (`bastion-format.sh`)
 
 Auto-formats non-JS files on save (ECC already handles JS/TS/JSON/CSS/HTML):
 
@@ -79,7 +79,7 @@ Auto-formats non-JS files on save (ECC already handles JS/TS/JSON/CSS/HTML):
 
 Best-effort — if the formatter isn't installed, it silently skips. Never blocks.
 
-### Hook 3: Migration Check (`ship-migration-check.js`)
+### Hook 3: Migration Check (`bastion-migration-check.js`)
 
 Automatically scans migration files (`.sql` in `migrations/`, `prisma/migrations/`, `drizzle/`, etc.) for:
 
@@ -88,12 +88,12 @@ Automatically scans migration files (`.sql` in `migrations/`, `prisma/migrations
 - **Type narrowing** — `VARCHAR` size reduction, integer downcast (data truncation risk)
 - **Missing rollback** — Destructive UP migration without a corresponding DOWN migration
 
-### Command: `/ship:scan`
+### Command: `/bastion:scan`
 
 On-demand architecture and migration analysis for any project directory:
 
 ```
-/ship:scan
+/bastion:scan
 ```
 
 Checks for:
@@ -110,44 +110,44 @@ Outputs a scored report (0-100) with categorized issues (CRITICAL / HIGH / MEDIU
 ## Commands Reference
 
 ```
-shipkit install      # Install full stack (ECC + GSD + Ralph Loop + ShipKit hooks)
-shipkit uninstall    # Remove ShipKit files only
-shipkit detect       # Detect tech stack in current directory
-shipkit scan         # Run architecture + migration analysis on current directory
+bastion install      # Install full stack (ECC + GSD + Ralph Loop + Bastion hooks)
+bastion uninstall    # Remove Bastion files only
+bastion detect       # Detect tech stack in current directory
+bastion scan         # Run architecture + migration analysis on current directory
 ```
 
 ## How It Works
 
 ### Installation Order
 
-ShipKit installs dependencies in a specific order because each layer builds on the previous:
+Bastion installs dependencies in a specific order because each layer builds on the previous:
 
 1. **ECC** — `npm install -g ecc-universal` + `ecc-install` (sets up rules)
 2. **GSD** — `npx -y get-shit-done-cc@latest --claude --global` (patches `settings.json` with its own hooks)
 3. **Ralph Loop** — Sparse git clone from `anthropics/claude-code` repo
-4. **ShipKit** — Copies hooks/commands, **appends** to the already-patched `settings.json`
+4. **Bastion** — Copies hooks/commands, **appends** to the already-patched `settings.json`
 
 ### Idempotency
 
-Running `shipkit install` multiple times is safe. Each dependency checks if it's already installed before acting:
+Running `bastion install` multiple times is safe. Each dependency checks if it's already installed before acting:
 
 ```
-$ node ~/shipkit/bin/shipkit.cjs install
+$ node ~/bastion/bin/bastion.cjs install
 
-ShipKit: Checking dependencies...
+Bastion: Checking dependencies...
   ECC (ecc-universal): already installed
   ECC rules: already in place
   GSD (get-shit-done-cc): already installed
   Ralph Loop: already installed
   Dependencies checked.
 
-  Settings: ShipKit hooks already present (skipped)
-ShipKit: Installation complete.
+  Settings: Bastion hooks already present (skipped)
+Bastion: Installation complete.
 ```
 
 ### Fault Tolerance
 
-If any dependency fails to install (network issues, permissions, etc.), ShipKit warns and continues. You can install the failed dependency manually later.
+If any dependency fails to install (network issues, permissions, etc.), Bastion warns and continues. You can install the failed dependency manually later.
 
 ## Stack Overview
 
@@ -160,11 +160,11 @@ After installation, your Claude Code session has:
 | Project planning | GSD | `/gsd:new-project`, `/gsd:plan-phase` |
 | Phase execution | GSD | `/gsd:execute-phase` |
 | Autonomous loops | Ralph Loop | `/ralph-loop "build feature X" --max-iterations 5` |
-| Secret scanning | ShipKit | Automatic (runs on every file write) |
-| SQL injection detection | ShipKit | Automatic (runs on every file write) |
-| Migration safety | ShipKit | Automatic + `/ship:scan` |
-| Architecture analysis | ShipKit | `/ship:scan` |
-| Auto-format (Python/Go/Swift/Rust) | ShipKit | Automatic (runs on every file write) |
+| Secret scanning | Bastion | Automatic (runs on every file write) |
+| SQL injection detection | Bastion | Automatic (runs on every file write) |
+| Migration safety | Bastion | Automatic + `/bastion:scan` |
+| Architecture analysis | Bastion | `/bastion:scan` |
+| Auto-format (Python/Go/Swift/Rust) | Bastion | Automatic (runs on every file write) |
 
 ## Troubleshooting
 
@@ -178,9 +178,9 @@ After installation, your Claude Code session has:
 
 **Ralph Loop not found in repo** — The plugin may have moved. Check [anthropics/claude-code](https://github.com/anthropics/claude-code) for current location.
 
-**Hooks not firing** — Verify settings.json: `grep ship- ~/.claude/settings.json`
+**Hooks not firing** — Verify settings.json: `grep bastion- ~/.claude/settings.json`
 
-**Debug mode** — Run with `SHIPKIT_DEBUG=1 node ~/shipkit/bin/shipkit.cjs install` for stack traces.
+**Debug mode** — Run with `BASTION_DEBUG=1 node ~/bastion/bin/bastion.cjs install` for stack traces.
 
 ## License
 

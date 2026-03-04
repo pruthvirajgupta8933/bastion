@@ -1,15 +1,15 @@
 ---
-name: ship:scan
+name: bastion:scan
 description: Architecture analysis + migration safety scan (complements ECC's /code-review)
 interaction_mode: normal
 allowed_tools: [Read, Bash, Glob, Grep, Task]
 ---
 
-# ShipKit Scan — Architecture + Migration Analysis
+# Bastion Scan — Architecture + Migration Analysis
 
 You are running a focused architecture and migration safety analysis. This command fills gaps that ECC's `/code-review` doesn't cover: frontend-heavy detection, god components, N+1 queries, float-for-money, and migration safety.
 
-**NOTE**: This does NOT replace ECC's `/code-review`. Use `/code-review` for general quality, security, and style. Use `/ship:scan` for architecture-specific and migration-specific checks.
+**NOTE**: This does NOT replace ECC's `/code-review`. Use `/code-review` for general quality, security, and style. Use `/bastion:scan` for architecture-specific and migration-specific checks.
 
 ## Step 1: Determine Scan Scope
 
@@ -21,7 +21,7 @@ You are running a focused architecture and migration safety analysis. This comma
 Run the architecture analyzer on the project:
 
 ```bash
-node ~/shipkit/bin/lib/architecture-analyzer.cjs
+node ~/bastion/bin/lib/architecture-analyzer.cjs
 ```
 
 Or use the analyzer directly by reading the project files and checking for:
@@ -54,7 +54,7 @@ For each migration directory found, validate:
 
 ```
 ========================================
-  ShipKit Architecture + Migration Report
+  Bastion Architecture + Migration Report
 ========================================
 
 Score: <0-100>/100

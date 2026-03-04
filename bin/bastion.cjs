@@ -8,27 +8,27 @@ const { execSync } = require('child_process');
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const SHIPKIT_ROOT = path.resolve(__dirname, '..');
+const BASTION_ROOT = path.resolve(__dirname, '..');
 const HOME = require('os').homedir();
 const CLAUDE_DIR = path.join(HOME, '.claude');
-const SHIPKIT_META_DIR = path.join(HOME, '.shipkit');
-const MANIFEST_PATH = path.join(SHIPKIT_META_DIR, 'manifest.json');
+const BASTION_META_DIR = path.join(HOME, '.bastion');
+const MANIFEST_PATH = path.join(BASTION_META_DIR, 'manifest.json');
 const SETTINGS_PATH = path.join(CLAUDE_DIR, 'settings.json');
 
 // Only copy hooks and commands — NEVER rules or agents (ECC owns those)
 const COPY_MAPPINGS = [
   { src: 'hooks', dest: 'hooks' },
-  { src: 'commands/ship', dest: 'commands/ship' },
+  { src: 'commands/bastion', dest: 'commands/bastion' },
 ];
 
-// The 3 ShipKit hooks — NO context monitor, NO statusline (GSD owns those)
-const SHIPKIT_HOOKS = [
+// The 3 Bastion hooks — NO context monitor, NO statusline (GSD owns those)
+const BASTION_HOOKS = [
   {
     matcher: 'Write|Edit',
     hooks: [
-      { type: 'command', command: `node "${path.join(CLAUDE_DIR, 'hooks', 'ship-guardian.js')}"` },
-      { type: 'command', command: `bash "${path.join(CLAUDE_DIR, 'hooks', 'ship-format.sh')}"` },
-      { type: 'command', command: `node "${path.join(CLAUDE_DIR, 'hooks', 'ship-migration-check.js')}"` },
+      { type: 'command', command: `node "${path.join(CLAUDE_DIR, 'hooks', 'bastion-guardian.js')}"` },
+      { type: 'command', command: `bash "${path.join(CLAUDE_DIR, 'hooks', 'bastion-format.sh')}"` },
+      { type: 'command', command: `node "${path.join(CLAUDE_DIR, 'hooks', 'bastion-migration-check.js')}"` },
     ],
   },
 ];
@@ -79,9 +79,9 @@ function writeJSON(filePath, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
 
-function isShipkitHook(hookObj) {
+function isBastionHook(hookObj) {
   const cmd = typeof hookObj === 'string' ? hookObj : (hookObj && hookObj.command) || '';
-  return cmd.includes('ship-');
+  return cmd.includes('bastion-');
 }
 
 function cleanEmptyDirs(dir) {
@@ -98,13 +98,13 @@ function cleanEmptyDirs(dir) {
 
 function printUsage() {
   console.log(`
-shipkit — Thin addon layer for Claude Code (complements ECC + GSD)
+bastion — Fortified dev stack for Claude Code (ECC + GSD + Ralph Loop + safety hooks)
 
-Usage: shipkit <command>
+Usage: bastion <command>
 
 Commands:
-  install     Copy hooks + commands to ~/.claude/ and patch settings
-  uninstall   Remove ShipKit files from ~/.claude/ and unpatch settings
+  install     Install full dev stack and copy hooks + commands to ~/.claude/
+  uninstall   Remove Bastion files from ~/.claude/ and unpatch settings
   detect      Run stack detection on current directory
   scan        Run architecture + migration analysis on current directory
 `);
@@ -211,17 +211,17 @@ function installRalphLoop() {
 }
 
 function ensureDependencies() {
-  console.log('ShipKit: Checking dependencies...\n');
+  console.log('Bastion: Checking dependencies...\n');
 
   // Require npm
   if (!isCommandAvailable('npm')) {
-    console.error('ShipKit: npm is required. Install Node.js first.');
+    console.error('Bastion: npm is required. Install Node.js first.');
     process.exit(1);
   }
 
   // Require git (for Ralph Loop clone)
   if (!isCommandAvailable('git')) {
-    console.error('ShipKit: git is required.');
+    console.error('Bastion: git is required.');
     process.exit(1);
   }
 
@@ -233,7 +233,7 @@ function ensureDependencies() {
     console.warn('  Continuing without ECC. Install manually: npm install -g ecc-universal');
   }
 
-  // 2. GSD — Workflow Layer (must install before ShipKit patches settings.json)
+  // 2. GSD — Workflow Layer (must install before Bastion patches settings.json)
   try {
     installGSD();
   } catch (err) {
@@ -255,7 +255,7 @@ function ensureDependencies() {
 // ── Install ──────────────────────────────────────────────────────────────────
 
 function install() {
-  console.log('ShipKit: Installing addon layer...\n');
+  console.log('Bastion: Installing dev stack...\n');
 
   // Install ECC, GSD, Ralph Loop first (GSD patches settings.json before we append)
   ensureDependencies();
@@ -263,7 +263,7 @@ function install() {
   const manifest = { version: '1.0.0', installedAt: new Date().toISOString(), files: {} };
 
   for (const mapping of COPY_MAPPINGS) {
-    const srcDir = path.join(SHIPKIT_ROOT, mapping.src);
+    const srcDir = path.join(BASTION_ROOT, mapping.src);
     const destDir = path.join(CLAUDE_DIR, mapping.dest);
     const files = collectFiles(srcDir);
 
@@ -275,7 +275,7 @@ function install() {
 
       const hash = fileHash(srcFile);
       const manifestKey = path.relative(CLAUDE_DIR, destFile);
-      manifest.files[manifestKey] = { hash, source: path.relative(SHIPKIT_ROOT, srcFile) };
+      manifest.files[manifestKey] = { hash, source: path.relative(BASTION_ROOT, srcFile) };
       console.log(`  Copied: ${manifestKey}`);
     }
   }
@@ -284,7 +284,7 @@ function install() {
   writeJSON(MANIFEST_PATH, manifest);
 
   console.log(`\n  Manifest: ${MANIFEST_PATH}`);
-  console.log('ShipKit: Installation complete.\n');
+  console.log('Bastion: Installation complete.\n');
 }
 
 // ── Settings Patching ────────────────────────────────────────────────────────
@@ -298,24 +298,24 @@ function patchSettings() {
   const existingHooks = settings.hooks || {};
   const postToolUse = existingHooks.PostToolUse || [];
 
-  // Check if ship-* hooks already exist (idempotent)
-  const hasShipHooks = postToolUse.some((entry) => {
+  // Check if bastion-* hooks already exist (idempotent)
+  const hasBastionHooks = postToolUse.some((entry) => {
     const hooks = entry.hooks || [];
-    return hooks.some((h) => isShipkitHook(h));
+    return hooks.some((h) => isBastionHook(h));
   });
 
-  if (hasShipHooks) {
-    console.log('\n  Settings: ShipKit hooks already present (skipped)');
+  if (hasBastionHooks) {
+    console.log('\n  Settings: Bastion hooks already present (skipped)');
     return;
   }
 
-  // Append ShipKit hook entries — never replace existing ones
-  const updatedPostToolUse = [...postToolUse, ...SHIPKIT_HOOKS];
+  // Append Bastion hook entries — never replace existing ones
+  const updatedPostToolUse = [...postToolUse, ...BASTION_HOOKS];
   const updatedHooks = { ...existingHooks, PostToolUse: updatedPostToolUse };
   const updatedSettings = { ...settings, hooks: updatedHooks };
 
   writeJSON(SETTINGS_PATH, updatedSettings);
-  console.log('\n  Patched: settings.json (3 hooks appended to PostToolUse)');
+  console.log('\n  Patched: settings.json (3 Bastion hooks appended to PostToolUse)');
 }
 
 function unpatchSettings() {
@@ -327,7 +327,7 @@ function unpatchSettings() {
   for (const [eventType, entries] of Object.entries(settings.hooks)) {
     const filtered = entries
       .map((entry) => {
-        const cleanedHooks = (entry.hooks || []).filter((h) => !isShipkitHook(h));
+        const cleanedHooks = (entry.hooks || []).filter((h) => !isBastionHook(h));
         return cleanedHooks.length > 0 ? { ...entry, hooks: cleanedHooks } : null;
       })
       .filter(Boolean);
@@ -345,7 +345,7 @@ function unpatchSettings() {
   }
 
   writeJSON(SETTINGS_PATH, updatedSettings);
-  console.log('  Unpatched: settings.json (ship-* hooks removed)');
+  console.log('  Unpatched: settings.json (bastion-* hooks removed)');
 }
 
 // ── Uninstall ────────────────────────────────────────────────────────────────
@@ -353,11 +353,11 @@ function unpatchSettings() {
 function uninstall() {
   const manifest = readJSON(MANIFEST_PATH);
   if (!manifest) {
-    console.error('ShipKit: No manifest found. Nothing to uninstall.');
+    console.error('Bastion: No manifest found. Nothing to uninstall.');
     process.exit(1);
   }
 
-  console.log('ShipKit: Uninstalling...\n');
+  console.log('Bastion: Uninstalling...\n');
 
   for (const manifestKey of Object.keys(manifest.files)) {
     const destFile = path.join(CLAUDE_DIR, manifestKey);
@@ -367,7 +367,7 @@ function uninstall() {
     }
   }
 
-  cleanEmptyDirs(path.join(CLAUDE_DIR, 'commands', 'ship'));
+  cleanEmptyDirs(path.join(CLAUDE_DIR, 'commands', 'bastion'));
   cleanEmptyDirs(path.join(CLAUDE_DIR, 'hooks'));
 
   unpatchSettings();
@@ -375,9 +375,9 @@ function uninstall() {
   if (fs.existsSync(MANIFEST_PATH)) {
     fs.unlinkSync(MANIFEST_PATH);
   }
-  cleanEmptyDirs(SHIPKIT_META_DIR);
+  cleanEmptyDirs(BASTION_META_DIR);
 
-  console.log('\nShipKit: Uninstallation complete.\n');
+  console.log('\nBastion: Uninstallation complete.\n');
 }
 
 // ── Detect ───────────────────────────────────────────────────────────────────
@@ -386,7 +386,7 @@ function detect() {
   const { detect: runDetect } = require('./lib/detect.cjs');
   const projectDir = process.cwd();
 
-  console.log(`ShipKit: Detecting stack in ${projectDir}\n`);
+  console.log(`Bastion: Detecting stack in ${projectDir}\n`);
   const result = runDetect(projectDir);
   console.log(JSON.stringify(result, null, 2));
 }
@@ -398,13 +398,13 @@ function scan() {
   const { validateMigrationChain } = require('./lib/migration-validator.cjs');
   const projectDir = process.cwd();
 
-  console.log(`ShipKit: Scanning ${projectDir}\n`);
+  console.log(`Bastion: Scanning ${projectDir}\n`);
 
   // Architecture analysis
   const archResult = analyzeArchitecture(projectDir);
 
   console.log('========================================');
-  console.log('  ShipKit Architecture Report');
+  console.log('  Bastion Architecture Report');
   console.log('========================================\n');
   console.log(`  Score: ${archResult.score}/100\n`);
 
@@ -499,7 +499,7 @@ function main() {
 
   const handler = commands[command];
   if (!handler) {
-    console.error(`ShipKit: Unknown command "${command}"\n`);
+    console.error(`Bastion: Unknown command "${command}"\n`);
     printUsage();
     process.exit(1);
   }
@@ -507,8 +507,8 @@ function main() {
   try {
     handler();
   } catch (err) {
-    console.error(`ShipKit: Error running "${command}": ${err.message}`);
-    if (process.env.SHIPKIT_DEBUG) {
+    console.error(`Bastion: Error running "${command}": ${err.message}`);
+    if (process.env.BASTION_DEBUG) {
       console.error(err.stack);
     }
     process.exit(1);

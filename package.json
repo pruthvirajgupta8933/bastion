@@ -1,10 +1,10 @@
 {
-  "name": "shipkit",
+  "name": "bastion-cc",
   "version": "2.0.0",
-  "description": "Thin addon layer for Claude Code — secret detection, migration safety, architecture analysis, auto-format for non-JS languages",
-  "main": "bin/shipkit.cjs",
+  "description": "Fortified dev stack for Claude Code — one command to install ECC, GSD, Ralph Loop, and safety hooks",
+  "main": "bin/bastion.cjs",
   "bin": {
-    "shipkit": "bin/shipkit.cjs"
+    "bastion": "bin/bastion.cjs"
   },
   "files": [
     "bin/",
@@ -12,15 +12,15 @@
     "hooks/"
   ],
   "scripts": {
-    "install-local": "node bin/shipkit.cjs install",
-    "uninstall-local": "node bin/shipkit.cjs uninstall",
-    "test": "node bin/shipkit.cjs detect"
+    "install-local": "node bin/bastion.cjs install",
+    "uninstall-local": "node bin/bastion.cjs uninstall",
+    "test": "node bin/bastion.cjs detect"
   },
   "keywords": [
     "claude-code",
-    "addon",
+    "bastion",
+    "dev-stack",
     "code-quality",
-    "shipkit",
     "secret-detection",
     "migration-safety"
   ],

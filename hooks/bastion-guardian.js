@@ -6,7 +6,7 @@ const path = require('path');
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const DEBOUNCE_PATH = '/tmp/shipkit-guardian-debounce.json';
+const DEBOUNCE_PATH = '/tmp/bastion-guardian-debounce.json';
 const DEBOUNCE_INTERVAL = 5;
 const MAX_FILE_LINES = 800;
 
