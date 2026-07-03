@@ -1,0 +1,7 @@
+# Core RAG demo dependencies
+sentence-transformers>=3.0    # embeddings (bundles torch + a 384-dim MiniLM model)
+numpy>=1.24                   # the tiny in-memory vector store
+
+# Optional — only needed for the generation ("G") step.
+# Without it (or without credentials), the demo runs retrieval-only.
+anthropic>=0.40
