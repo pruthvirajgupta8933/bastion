@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+### Added — `skiper-ui-ux` skill (Design layer)
+
+Bastion now installs a UI/UX skill that Claude loads on demand whenever you build
+or improve a React/Next.js interface (hero sections, cards, modals, drawers,
+marquees, scroll effects, micro-interactions, page transitions, or any "make it
+feel premium / add animation" request).
+
+The skill teaches the **Skiper UI + Motion** stack:
+
+- **Skiper UI** — 100+ un-common single-file shadcn/ui components pulled via the
+  shadcn registry CLI (`npx shadcn add @skiper-ui/skiper40`); you own the source.
+- **Motion** (motion.dev, formerly Framer Motion) — imported from `motion/react`;
+  core API for `animate`, variants + stagger, `whileInView`, `AnimatePresence`,
+  `layout`, gestures, and springs.
+- **Motion & UX rules** — animate only `transform`/`opacity`, duration budgets,
+  spring vs. easing, list staggering, `prefers-reduced-motion` via
+  `useReducedMotion()`, and preserving Radix/shadcn accessibility.
+
+Installed to `~/.claude/skills/skiper-ui-ux/` and removed cleanly on uninstall.
+No configuration needed.
+
 ## v2.0.0 — 2026-03-04
 
 ### What is Bastion?

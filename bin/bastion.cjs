@@ -15,10 +15,11 @@ const BASTION_META_DIR = path.join(HOME, '.bastion');
 const MANIFEST_PATH = path.join(BASTION_META_DIR, 'manifest.json');
 const SETTINGS_PATH = path.join(CLAUDE_DIR, 'settings.json');
 
-// Only copy hooks and commands — NEVER rules or agents (ECC owns those)
+// Only copy hooks, commands, and skills — NEVER rules or agents (ECC owns those)
 const COPY_MAPPINGS = [
   { src: 'hooks', dest: 'hooks' },
   { src: 'commands/bastion', dest: 'commands/bastion' },
+  { src: 'skills/skiper-ui-ux', dest: 'skills/skiper-ui-ux' },
 ];
 
 // The 3 Bastion hooks — NO context monitor, NO statusline (GSD owns those)
@@ -369,6 +370,8 @@ function uninstall() {
 
   cleanEmptyDirs(path.join(CLAUDE_DIR, 'commands', 'bastion'));
   cleanEmptyDirs(path.join(CLAUDE_DIR, 'hooks'));
+  cleanEmptyDirs(path.join(CLAUDE_DIR, 'skills', 'skiper-ui-ux'));
+  cleanEmptyDirs(path.join(CLAUDE_DIR, 'skills'));
 
   unpatchSettings();
 

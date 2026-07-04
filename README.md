@@ -10,6 +10,7 @@ Bastion is a safety-first addon for [Claude Code](https://claude.ai/claude-code)
 | Workflow | [GSD](https://www.npmjs.com/package/get-shit-done-cc) (get-shit-done-cc) | Phase-based project management, planning, and execution |
 | Automation | [Ralph Loop](https://github.com/anthropics/claude-code/tree/main/plugins/ralph-wiggum) | Autonomous iteration loops (`/ralph-loop`) |
 | Safety | **Bastion** | Secret detection, SQL injection scanning, migration safety, auto-formatting |
+| Design | **Bastion** | UI/UX skill for animated interfaces with Skiper UI + Motion |
 
 ## Quick Start
 
@@ -50,11 +51,11 @@ grep bastion- ~/.claude/settings.json
 node ~/bastion/bin/bastion.cjs uninstall
 ```
 
-> **Note:** Uninstall only removes Bastion's own files (3 hooks + 1 command). ECC, GSD, and Ralph Loop are left untouched.
+> **Note:** Uninstall only removes Bastion's own files (3 hooks + 1 command + 1 skill). ECC, GSD, and Ralph Loop are left untouched.
 
 ## What Bastion Adds
 
-Bastion installs 3 PostToolUse hooks and 1 slash command. These run automatically every time Claude Code writes or edits a file.
+Bastion installs 3 PostToolUse hooks, 1 slash command, and 1 skill. The hooks run automatically every time Claude Code writes or edits a file; the skill loads on demand when you build UI.
 
 ### Hook 1: Guardian (`bastion-guardian.js`)
 
@@ -107,6 +108,18 @@ Checks for:
 
 Outputs a scored report (0-100) with categorized issues (CRITICAL / HIGH / MEDIUM / LOW).
 
+### Skill: `skiper-ui-ux`
+
+A UI/UX skill Claude loads automatically whenever you build or improve a React/Next.js interface — hero sections, cards, modals, drawers, navs, marquees, scroll effects, micro-interactions, page transitions, or any "make it feel premium / add animation" request.
+
+It teaches the **Skiper UI + Motion** stack:
+
+- **Skiper UI** — 100+ un-common, single-file [shadcn/ui](https://ui.shadcn.com) components pulled via the shadcn registry CLI (`npx shadcn add @skiper-ui/skiper40`); you own the source.
+- **Motion** ([motion.dev](https://motion.dev), formerly Framer Motion) — the animation engine, imported from `motion/react`.
+- **Motion & UX rules** — animate only `transform`/`opacity`, duration budgets, spring vs. easing, list staggering, `prefers-reduced-motion`, and preserving Radix/shadcn accessibility.
+
+The skill loads on demand — no configuration needed once installed.
+
 ## Commands Reference
 
 ```
@@ -125,7 +138,7 @@ Bastion installs dependencies in a specific order because each layer builds on t
 1. **ECC** — `npm install -g ecc-universal` + `ecc-install` (sets up rules)
 2. **GSD** — `npx -y get-shit-done-cc@latest --claude --global` (patches `settings.json` with its own hooks)
 3. **Ralph Loop** — Sparse git clone from `anthropics/claude-code` repo
-4. **Bastion** — Copies hooks/commands, **appends** to the already-patched `settings.json`
+4. **Bastion** — Copies hooks/commands/skills, **appends** to the already-patched `settings.json`
 
 ### Idempotency
 
@@ -165,6 +178,7 @@ After installation, your Claude Code session has:
 | Migration safety | Bastion | Automatic + `/bastion:scan` |
 | Architecture analysis | Bastion | `/bastion:scan` |
 | Auto-format (Python/Go/Swift/Rust) | Bastion | Automatic (runs on every file write) |
+| Animated UI/UX (Skiper UI + Motion) | Bastion | `skiper-ui-ux` skill (loads on demand) |
 
 ## Troubleshooting
 
