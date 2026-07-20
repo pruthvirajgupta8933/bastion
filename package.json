@@ -9,7 +9,8 @@
   "files": [
     "bin/",
     "commands/",
-    "hooks/"
+    "hooks/",
+    "skills/"
   ],
   "scripts": {
     "install-local": "node bin/bastion.cjs install",

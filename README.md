@@ -42,6 +42,9 @@ ls ~/.claude/commands/ralph-loop.md
 
 # Bastion hooks active
 grep bastion- ~/.claude/settings.json
+
+# Setup skill installed
+ls ~/.claude/skills/claude-code-setup/SKILL.md
 ```
 
 ### Uninstall
@@ -50,11 +53,11 @@ grep bastion- ~/.claude/settings.json
 node ~/bastion/bin/bastion.cjs uninstall
 ```
 
-> **Note:** Uninstall only removes Bastion's own files (3 hooks + 1 command). ECC, GSD, and Ralph Loop are left untouched.
+> **Note:** Uninstall only removes Bastion's own files (3 hooks + 1 command + 1 skill). ECC, GSD, and Ralph Loop are left untouched.
 
 ## What Bastion Adds
 
-Bastion installs 3 PostToolUse hooks and 1 slash command. These run automatically every time Claude Code writes or edits a file.
+Bastion installs 3 PostToolUse hooks, 1 slash command, and 1 passive skill. The hooks run automatically every time Claude Code writes or edits a file; the skill loads on demand when you're configuring Claude Code.
 
 ### Hook 1: Guardian (`bastion-guardian.js`)
 
@@ -106,6 +109,25 @@ Checks for:
 - All migration checks listed above
 
 Outputs a scored report (0-100) with categorized issues (CRITICAL / HIGH / MEDIUM / LOW).
+
+### Skill: `claude-code-setup`
+
+Bastion also ships a **passive skill** that teaches Claude Code's configuration
+model, installed to `~/.claude/skills/claude-code-setup/`. It triggers
+automatically when you're setting up Claude Code — structuring the `CLAUDE.md`
+memory hierarchy, deciding what belongs at the global vs project level, or
+building skills and subagents. It covers:
+
+- The **loading model** (what's always in context vs. loaded on demand, and why
+  progressive disclosure means skills don't bloat your context)
+- The **memory hierarchy** — `CLAUDE.md` scopes, precedence, and `@import` splits
+- What belongs **global (`~/.claude/`) vs project (`.claude/`)**
+- **Skills, subagents, commands, settings** precedence and git hygiene
+- Copy-paste **templates** for every file (in the skill's `references/`)
+
+Because it's a passive skill, you don't invoke it — Claude reaches for it when
+the topic comes up. Share it across your team by having everyone run
+`bastion install`.
 
 ## Commands Reference
 

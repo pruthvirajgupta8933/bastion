@@ -15,10 +15,11 @@ const BASTION_META_DIR = path.join(HOME, '.bastion');
 const MANIFEST_PATH = path.join(BASTION_META_DIR, 'manifest.json');
 const SETTINGS_PATH = path.join(CLAUDE_DIR, 'settings.json');
 
-// Only copy hooks and commands — NEVER rules or agents (ECC owns those)
+// Copy hooks, commands, and skills — NEVER rules or agents (ECC owns those)
 const COPY_MAPPINGS = [
   { src: 'hooks', dest: 'hooks' },
   { src: 'commands/bastion', dest: 'commands/bastion' },
+  { src: 'skills', dest: 'skills' },
 ];
 
 // The 3 Bastion hooks — NO context monitor, NO statusline (GSD owns those)
